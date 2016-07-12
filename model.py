@@ -64,27 +64,46 @@ class OwnedThreads(db.Model):
     __tablename__ = "owned_threads"
 
     owned_thread_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    contributer_thread_id = db.Column(db.Integer, db.ForeignKey('contributer_threads.contributer_thread_id'))
     title = db.Column(db.String(100), nullable=False)
     text = db.Column(db.String(600), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     public_or_private = db.Column(db.String, nullable=False)
     live_or_closed = db.Column(db.String, nullable=False)
-    contributers = db.Column(db.Integer, nullable=True)
+    contributer_count = db.Column(db.Integer, nullable=True)
+
+    # Define relationship to User
+
+    user = db.relationship("User", backref=db.backref("owned_threads", order_by=user_id))
+
+    # Define relationship to ParticipantThreads
+
+    contributers = db.relationship("ContributerThreads", backref=db.backref("owned_threads", order_by=contributer_thread_id))
 
     def __repr__(self):
 
         return "<OwnedThreads owned_thread_id={} public_or_private={} live_or_closed={}>".format(self.owned_thread_id, 
                                                                                         self.public_or_private, self.live_or_closed)
 
-class ParticipantThreads(db.Model):
-    """ Contains active participant threads according to user. """
+class ContributerThreads(db.Model):
+    """ Contains contributed threads according to user on owned threads. """
 
-    __tablename__ = "participant_threads"
+    __tablename__ = "contributer_threads"
 
-    participant_thread_id = db.Column(db.String(600), primary_key=True)
+    contributer_thread_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    owned_thread_id = db.Column(db.Integer, db.ForeignKey('owned_threads.owned_thread_id'))
     text = db.Column(db.String(100), nullable=False)
     date_submitted = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     likes = db.Column(db.Integer, nullable=True)
+
+    def __repr__(self):
+
+        return "<ContributerThreads contributer_thread_id={} text={} date_submitted={} likes={}".format(self.contributer_thread_id,
+                                                                                                        self.text,
+                                                                                                        self.date_submitted,
+                                                                                                        self.likes)
 
 
 
