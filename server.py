@@ -34,3 +34,32 @@ app.jinja_env.undefined = StrictUndefined
 
 ####################################################
 
+@app.route('/', methods=['GET'])
+def index():
+    """ Homepage with login/registration """
+
+    current_session = session.get('user_id', None)
+    return render_template("homepage.html")
+
+
+
+
+##############################################################################
+# Connects to DB
+
+if __name__ == "__main__":
+
+    app.debug = True
+
+    connect_to_db(app)
+
+    DebugToolbarExtension(app)
+
+    app.run()
+
+
+
+
+
+
+
