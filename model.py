@@ -37,15 +37,39 @@ class User(db.Model):
 
         return "<User user_id={} email={}>".format(self.user_id, self.email)
 
+class Relations(db.Model):
+    """ Connect two users to establish a friendship and allow for content viewing. """
+
+    __tablename__ = "relations"
+
+    relations_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_a_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user_b_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    status = db.Column(db.String(300), nullable=False)
+
+    # Define relations between users
+    user_a_id = db.relations("User", foreign_keys=[user_a_id], backref=db.backref("user"))
+    user_b_id = db.relations("User", foreign_keys=[user_b_id], backref=db.backref("user"))
+
+    def __repr__(self):
+        """ Provide helpful representation when printed. """
+
+        return "<Relations relations_id=%s user_a_id=%s user_b_id=%s status=%s>" % (self.relations_id,
+                                                                                    self.user_a_id,
+                                                                                    self.user_b_id,
+                                                                                    self.status)
 class OwnedThreads(db.Model):
     """ Contains owned thread information per user. """
 
     __tablename__ = "owned_threads"
 
     owned_thread_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    text = db.Column(db.String(600), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     public_or_private = db.Column(db.String, nullable=False)
     live_or_closed = db.Column(db.String, nullable=False)
+    contributers = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
 
@@ -57,7 +81,12 @@ class ParticipantThreads(db.Model):
 
     __tablename__ = "participant_threads"
 
-    participant_thread_id = db.Column(db.String(600))
+    participant_thread_id = db.Column(db.String(600), primary_key=True)
+    text = db.Column(db.String(100), nullable=False)
+    date_submitted = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    likes = db.Column(db.Integer, nullable=True)
+
+
 
 ################################################################################
 
