@@ -33,6 +33,9 @@ class User(db.Model):
     username = db.Column(db.String(20), nullable=False)
     # created_at = db.Column()
 
+    # Put name inside TSVectorType definition for it to be fulltext-indexed (searchable)
+    search_vector = db.Column(TSVectorType('first_name', 'last_name'))
+
     def __repr__(self):
 
         return "<User user_id={} email={}>".format(self.user_id, self.email)
@@ -98,14 +101,20 @@ class ContributerThreads(db.Model):
     date_submitted = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     likes = db.Column(db.Integer, nullable=True)
 
+    # Define relationship to User
+
+    user = db.relationship("User", backref=db.backref("contributer_threads", order_by=user_id))
+
+    # Define relationship to OwnedThreads
+
+    owned = db.relationship("OwnedThreads", backref=db.backref("contributer_threads", order_by=owned_thread_id))
+
+
     def __repr__(self):
 
         return "<ContributerThreads contributer_thread_id={} text={} date_submitted={} likes={}".format(self.contributer_thread_id,
                                                                                                         self.text,
                                                                                                         self.date_submitted,
-                                                                                                        self.likes)
-
-
 
 ################################################################################
 
