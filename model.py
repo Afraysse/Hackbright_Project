@@ -49,8 +49,15 @@ class OwnedThreads(db.Model):
 
     def __repr__(self):
 
-        return "<OwnedThreads owned_thread_id={} public_or_private={} live_or_closed={}>".format(self.owned_thread_id, self.public_or_private, self.live_or_closed)
+        return "<OwnedThreads owned_thread_id={} public_or_private={} live_or_closed={}>".format(self.owned_thread_id, 
+                                                                                        self.public_or_private, self.live_or_closed)
 
+class ParticipantThreads(db.Model):
+    """ Contains active participant threads according to user. """
+
+    __tablename__ = "participant_threads"
+
+    participant_thread_id = db.Column(db.String(600))
 
 ################################################################################
 
