@@ -40,6 +40,27 @@ class User(db.Model):
 
         return "<User user_id={} email={}>".format(self.user_id, self.email)
 
+class Images(db.Model):
+    """ Stores user images that have been uploaded. """
+
+    __tablename__ = "images"
+
+    image_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    url = db.Column(db.String(200), nullable=False)
+    uploaded_At = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    likes = db.Column(db.Integer, nullable=True)
+    caption = db.Column(db.String(600), nullable=True)
+
+    user = db.relationship("User", backref=db.backref("images", order_by=user_id))
+
+    def __repr__(self):
+
+        return "<Images image_id={} likes={} caption={}".format(self.image_id,
+                                                                self.likes,
+                                                                self.caption)
+
+
 class Relations(db.Model):
     """ Connect two users to establish a friendship and allow for content viewing. """
 
@@ -51,8 +72,8 @@ class Relations(db.Model):
     status = db.Column(db.String(300), nullable=False)
 
     # Define relations between users
-    user_a_id = db.relations("User", foreign_keys=[user_a_id], backref=db.backref("user"))
-    user_b_id = db.relations("User", foreign_keys=[user_b_id], backref=db.backref("user"))
+    user_a_id = db.relationship("User", foreign_keys=[user_a_id], backref=db.backref("user"))
+    user_b_id = db.relationship("User", foreign_keys=[user_b_id], backref=db.backref("user"))
 
     def __repr__(self):
         """ Provide helpful representation when printed. """
@@ -115,6 +136,7 @@ class ContributerThreads(db.Model):
         return "<ContributerThreads contributer_thread_id={} text={} date_submitted={} likes={}".format(self.contributer_thread_id,
                                                                                                         self.text,
                                                                                                         self.date_submitted,
+                                                                                                        self.likes)
 
 ################################################################################
 
